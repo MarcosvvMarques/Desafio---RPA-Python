@@ -57,6 +57,7 @@ def process_pages():
 
 
 def create_quotes_file(quotes):
+    # Todo o bloco = criação do arquivo CSV
     with open('./quotes.csv', mode="w", newline="", encoding="utf-8") as file:
         writer = csv.DictWriter(file, fieldnames=quotes[0].keys())
 
@@ -102,17 +103,20 @@ def get_recurrent_tag(quotes):
     return most_recurrent_tag
 
 
+def start_scraping():
+    url = 'https://quotes.toscrape.com/js-delayed/'
+    driver.implicitly_wait(15)  # aguardar até 15s para a página ser carregada
+    driver.get(url)
+
+    process_pages()
+    quotes = read_quotes_from_file()
+    print("Quote count: " + str(get_quote_count(quotes)))
+    print("Recurrent author: " + get_recurrent_author(quotes))
+    print("Recurrent tag: " + get_recurrent_tag(quotes))
+
+
 # service é usado para iniciar uma instância do chrome webdriver
 service = Service()
 options = webdriver.ChromeOptions()
 driver = webdriver.Chrome(service=service, options=options)
-
-url = 'https://quotes.toscrape.com/js-delayed/'
-driver.implicitly_wait(15)  # aguardar até 15s para a página ser carregada
-driver.get(url)
-
-process_pages()
-quotes = read_quotes_from_file()
-print("Quote count: " + str(get_quote_count(quotes)))
-print("Recurrent author: " + get_recurrent_author(quotes))
-print("Recurrent tag: " + get_recurrent_tag(quotes))
+start_scraping()
