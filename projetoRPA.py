@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 import csv
+import pandas as pd
 
 
 def process_quote_list():
@@ -77,6 +78,30 @@ def read_quotes_from_file():
     return quotes
 
 
+def get_quote_count(quotes):
+    series = pd.Series(quotes)
+    return series.count()
+
+
+def get_recurrent_author(quotes):
+    # Extraindo a lista de autores
+    authors = [quote['author'] for quote in quotes]
+    # Criando uma Series para calcular as ocorrências
+    series = pd.Series(authors)
+    # Encontrando o autor mais recorrente
+    most_recurrent_author = series.value_counts(
+    ).idxmax()  # Obtém o índice do maior valor
+
+    return most_recurrent_author
+
+
+def get_recurrent_tag(quotes):
+    tags = [quote['tags'].split(';') for quote in quotes]
+    series = pd.Series(tags).explode()
+    most_recurrent_tag = series.value_counts().idxmax()
+    return most_recurrent_tag
+
+
 # service é usado para iniciar uma instância do chrome webdriver
 service = Service()
 options = webdriver.ChromeOptions()
@@ -88,4 +113,6 @@ driver.get(url)
 
 process_pages()
 quotes = read_quotes_from_file()
-print(quotes)
+print("Quote count: " + str(get_quote_count(quotes)))
+print("Recurrent author: " + get_recurrent_author(quotes))
+print("Recurrent tag: " + get_recurrent_tag(quotes))
