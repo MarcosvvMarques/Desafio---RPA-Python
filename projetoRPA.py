@@ -28,7 +28,7 @@ def process_quote(quoteElement):
     # Obtenha a lista de tags em formato de string (text)
     tags = get_tags(quoteElement)
     # Monte o quoteObject para agrupar os dados
-    return {'text': textElement.text, 'author': authorElement.text, 'tags': tags}
+    return {'text': textElement.text, 'author': authorElement.text, 'tags': ';'.join(tags)}
 
 
 def get_tags(quoteElement):
@@ -52,10 +52,10 @@ def process_pages():
             break
         else:
             nextButtomElements[0].click()
-    create_quotes_files(allQuotes)
+    create_quotes_file(allQuotes)
 
 
-def create_quotes_files(quotes):
+def create_quotes_file(quotes):
     with open('./quotes.csv', mode="w", newline="", encoding="utf-8") as file:
         writer = csv.DictWriter(file, fieldnames=quotes[0].keys())
 
@@ -64,6 +64,17 @@ def create_quotes_files(quotes):
 
         # Escrever as linhas (dados)
         writer.writerows(quotes)
+
+
+def read_quotes_from_file():
+    quotes = []
+    with open('./quotes.csv', mode="r", encoding="utf-8") as file:
+        reader = csv.DictReader(file)
+
+        # Cada linha será um dicionário
+        for row in reader:
+            quotes.append(dict(row))
+    return quotes
 
 
 # service é usado para iniciar uma instância do chrome webdriver
@@ -76,3 +87,5 @@ driver.implicitly_wait(15)  # aguardar até 15s para a página ser carregada
 driver.get(url)
 
 process_pages()
+quotes = read_quotes_from_file()
+print(quotes)
