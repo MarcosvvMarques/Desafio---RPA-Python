@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
+import csv
 
 
 def process_quote_list():
@@ -45,12 +46,24 @@ def process_pages():
     while (True):
         quotesBypage = process_quote_list()
         allQuotes.extend(quotesBypage)
-        nextButtomElements = driver.find_elements(By.CSS_SELECTOR, 'nav ul.pager li.next a')
+        nextButtomElements = driver.find_elements(
+            By.CSS_SELECTOR, 'nav ul.pager li.next a')
         if nextButtomElements == []:
             break
         else:
             nextButtomElements[0].click()
-    print(allQuotes)
+    create_quotes_files(allQuotes)
+
+
+def create_quotes_files(quotes):
+    with open('./quotes.csv', mode="w", newline="", encoding="utf-8") as file:
+        writer = csv.DictWriter(file, fieldnames=quotes[0].keys())
+
+        # Escrever o cabeçalho (nomes das colunas)
+        writer.writeheader()
+
+        # Escrever as linhas (dados)
+        writer.writerows(quotes)
 
 
 # service é usado para iniciar uma instância do chrome webdriver
