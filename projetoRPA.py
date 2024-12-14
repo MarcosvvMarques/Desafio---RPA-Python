@@ -1,8 +1,15 @@
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email import encoders
+from dotenv import load_dotenv
+import os
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 import csv
 import pandas as pd
+import smtplib
 
 
 def process_quote_list():
@@ -114,6 +121,61 @@ def start_scraping():
     print("Recurrent author: " + get_recurrent_author(quotes))
     print("Recurrent tag: " + get_recurrent_tag(quotes))
 
+
+load_dotenv()
+
+host = "smtp.gmail.com"
+port = "587"
+login = os.getenv("EMAIL_USER")
+senha = os.getenv("EMAIL_PASSWORD")
+
+server = smtplib.SMTP(host, port)
+
+server.ehlo()
+server.starttls()
+server.login(login, senha)
+
+corpo = """
+Olá, Boa noite! 
+
+Segue anexo com o relatório das citações extraídas. Abaixo se encontra o resumo do relatório:
+
+**Resumo do Relatório:**
+
+* Total de Citações: 100
+* Autor Mais Recorrente: Albert Einstein
+* Tag mais recorrente: Love
+
+Atenciosamente,
+Marcos Vasconcelos
+"""
+# montando o E-mail
+email_recipients = os.getenv("EMAIL_RECIPIENTS").split(",")
+email_msg = MIMEMultipart()
+email_msg['From'] = login
+email_msg['To'] = ", ".join(email_recipients)
+email_msg['subject'] = "Desafio - RPA Python"
+email_msg.attach(MIMEText(corpo, 'plain'))
+
+# abrindo o arquivo em modo leitura e binary
+cam_arquivo = "E:\\Desafio---RPA-Python\\quotes.csv"
+attchment = open(cam_arquivo, 'rb')
+
+# lendo o arquivo no modo binario e jogamos codificado em base 64 porque o email é enviado em base 64
+att = MIMEBase('application', 'octet-stream')
+att.set_payload(attchment.read())
+encoders.encode_base64(att)
+
+# adicionando o cabeçalho no tipo anexo de email
+att.add_header('content-Disposition', f'attachment; filename = quotes.csv')
+attchment.close()
+
+# serve para colocar o anexo no corpo do e-mail
+email_msg.attach(att)
+
+# Enviar o email tipo MIME no servidor SMTP
+server.sendmail(email_msg['From'], email_recipients, email_msg.as_string())
+server.quit()
 
 # service é usado para iniciar uma instância do chrome webdriver
 service = Service()

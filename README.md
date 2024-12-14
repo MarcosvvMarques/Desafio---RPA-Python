@@ -17,6 +17,9 @@ Este projeto consiste em realizar web scraping em um site para coletar citaçõe
 
 6 - Execute o script principal: python projetoRPA.py
 
+7 - Para enviar o E-mail crie um arquivo .env com as chaves "EMAIL_USER" e
+"EMAIL_PASSWORD" para que as credenciais fiquem desassociadas ao código
+
 
 ## Dependências
 
