@@ -29,13 +29,13 @@ def process_quote_list():
 
 
 def process_quote(quoteElement):
-    # busque o elemento HTML que contém a citação
+    # busca o elemento HTML que contém a citação
     textElement = quoteElement.find_element(By.CSS_SELECTOR, 'span.text')
-    # busque o elemento HTML que contém o author
+    # busca o elemento HTML que contém o author
     authorElement = quoteElement.find_element(By.CSS_SELECTOR, 'small.author')
-    # Obtenha a lista de tags em formato de string (text)
+    # Obtém a lista de tags em formato de string (text)
     tags = get_tags(quoteElement)
-    # Monte o quoteObject para agrupar os dados
+    # Monta o quoteObject para agrupar os dados
     return {'text': textElement.text, 'author': authorElement.text, 'tags': ';'.join(tags)}
 
 
@@ -48,42 +48,52 @@ def get_tags(quoteElement):
         tags.append(tagElement.text)
     return tags
 
+# Essa função foi criada para navegar entre as páginas do site, coletar todas as citações e salva-las em um arquivo
+
 
 def process_pages():
+    # cria uma lista onde serão armazenadas as citações de todas as páginas
     allQuotes = []
+    # cria um loop onde só será interrompido quando o botão de NEXT não existir mais
     while (True):
         quotesBypage = process_quote_list()
         allQuotes.extend(quotesBypage)
+        # verifica se existe um botão next na página através do css selector, buscando um elemento <a> que é filho de uma 'li' que está dentro da 'ul' que está em uma 'nav'
         nextButtomElements = driver.find_elements(
             By.CSS_SELECTOR, 'nav ul.pager li.next a')
         if nextButtomElements == []:
             break
         else:
             nextButtomElements[0].click()
+    # Após sair do loop sava todas as citações em uma arquivo
     create_quotes_file(allQuotes)
+
+# cria o arquivo quotes.csv e grava as citações nele
 
 
 def create_quotes_file(quotes):
-    # Todo o bloco = criação do arquivo CSV
     with open('./quotes.csv', mode="w", newline="", encoding="utf-8") as file:
+        # Escreve dicionários no arquivo CSV e define as colunas com base nas chaves do 1 dicionário da lista
         writer = csv.DictWriter(file, fieldnames=quotes[0].keys())
-
-        # Escrever o cabeçalho (nomes das colunas)
+        # Escreve o cabeçalho (nomes das colunas)
         writer.writeheader()
-
-        # Escrever as linhas (dados)
+        # Escreve as linhas (dados)
         writer.writerows(quotes)
+
+# lê as citações do arquivo quotes.csv e as retorna em forma de lista
 
 
 def read_quotes_from_file():
     quotes = []
     with open('./quotes.csv', mode="r", encoding="utf-8") as file:
+        # lê o arquivo linha por linha
         reader = csv.DictReader(file)
-
-        # Cada linha será um dicionário
+        # para cada linha do arquivo o dicionário correspondente é adicionado à lista
         for row in reader:
             quotes.append(dict(row))
     return quotes
+
+# conta o número de citações presentes na lista lida
 
 
 def get_quote_count(quotes):
@@ -102,10 +112,15 @@ def get_recurrent_author(quotes):
 
     return most_recurrent_author
 
+# idenfiticando a tag mais recorrente dentro da lista de citações
+
 
 def get_recurrent_tag(quotes):
+    # acessa o valor da chave tags, separando por ponto e vírgula
     tags = [quote['tags'].split(';') for quote in quotes]
+    # cada item da lista original vira uma linha da Serie e com o 'explode' transforma cada elemento da lista em uma nova linha
     series = pd.Series(tags).explode()
+    # conta quantas vezes cada tag aparece na "Series"
     most_recurrent_tag = series.value_counts().idxmax()
     return most_recurrent_tag
 
@@ -161,7 +176,7 @@ email_msg.attach(MIMEText(corpo, 'plain'))
 cam_arquivo = "E:\\Desafio---RPA-Python\\quotes.csv"
 attchment = open(cam_arquivo, 'rb')
 
-# lendo o arquivo no modo binario e jogamos codificado em base 64 porque o email é enviado em base 64
+# lendo o arquivo no modo binario e jogamos codificado em base 64 pois o email é enviado em base 64
 att = MIMEBase('application', 'octet-stream')
 att.set_payload(attchment.read())
 encoders.encode_base64(att)
@@ -170,7 +185,7 @@ encoders.encode_base64(att)
 att.add_header('content-Disposition', f'attachment; filename = quotes.csv')
 attchment.close()
 
-# serve para colocar o anexo no corpo do e-mail
+# colocando o anexo no corpo do e-mail
 email_msg.attach(att)
 
 # Enviar o email tipo MIME no servidor SMTP
