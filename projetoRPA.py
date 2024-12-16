@@ -48,9 +48,8 @@ def get_tags(quoteElement):
         tags.append(tagElement.text)
     return tags
 
+
 # Essa função foi criada para navegar entre as páginas do site, coletar todas as citações e salva-las em um arquivo
-
-
 def process_pages():
     # cria uma lista onde serão armazenadas as citações de todas as páginas
     allQuotes = []
@@ -68,9 +67,8 @@ def process_pages():
     # Após sair do loop sava todas as citações em uma arquivo
     create_quotes_file(allQuotes)
 
+
 # cria o arquivo quotes.csv e grava as citações nele
-
-
 def create_quotes_file(quotes):
     with open('./quotes.csv', mode="w", newline="", encoding="utf-8") as file:
         # Escreve dicionários no arquivo CSV e define as colunas com base nas chaves do 1 dicionário da lista
@@ -80,9 +78,8 @@ def create_quotes_file(quotes):
         # Escreve as linhas (dados)
         writer.writerows(quotes)
 
+
 # lê as citações do arquivo quotes.csv e as retorna em forma de lista
-
-
 def read_quotes_from_file():
     quotes = []
     with open('./quotes.csv', mode="r", encoding="utf-8") as file:
@@ -93,9 +90,8 @@ def read_quotes_from_file():
             quotes.append(dict(row))
     return quotes
 
+
 # conta o número de citações presentes na lista lida
-
-
 def get_quote_count(quotes):
     series = pd.Series(quotes)
     return series.count()
@@ -109,12 +105,10 @@ def get_recurrent_author(quotes):
     # Encontrando o autor mais recorrente
     most_recurrent_author = series.value_counts(
     ).idxmax()  # Obtém o índice do maior valor
-
     return most_recurrent_author
 
+
 # idenfiticando a tag mais recorrente dentro da lista de citações
-
-
 def get_recurrent_tag(quotes):
     # acessa o valor da chave tags, separando por ponto e vírgula
     tags = [quote['tags'].split(';') for quote in quotes]
@@ -164,6 +158,7 @@ Segue anexo com o relatório das citações extraídas. Abaixo se encontra o res
 Atenciosamente,
 Marcos Vasconcelos
 """
+
 # montando o E-mail
 email_recipients = os.getenv("EMAIL_RECIPIENTS").split(",")
 email_msg = MIMEMultipart()
@@ -172,25 +167,31 @@ email_msg['To'] = ", ".join(email_recipients)
 email_msg['subject'] = "Desafio - RPA Python"
 email_msg.attach(MIMEText(corpo, 'plain'))
 
+
 # abrindo o arquivo em modo leitura e binary
 cam_arquivo = "E:\\Desafio---RPA-Python\\quotes.csv"
 attchment = open(cam_arquivo, 'rb')
+
 
 # lendo o arquivo no modo binario e jogamos codificado em base 64 pois o email é enviado em base 64
 att = MIMEBase('application', 'octet-stream')
 att.set_payload(attchment.read())
 encoders.encode_base64(att)
 
+
 # adicionando o cabeçalho no tipo anexo de email
 att.add_header('content-Disposition', f'attachment; filename = quotes.csv')
 attchment.close()
 
+
 # colocando o anexo no corpo do e-mail
 email_msg.attach(att)
+
 
 # Enviar o email tipo MIME no servidor SMTP
 server.sendmail(email_msg['From'], email_recipients, email_msg.as_string())
 server.quit()
+
 
 # service é usado para iniciar uma instância do chrome webdriver
 service = Service()
