@@ -6,7 +6,7 @@ from email.mime.base import MIMEBase
 from email import encoders
 import os
 
-
+#Montando a estrutura do e-mail
 def enviar_email(caminho_arquivo, destinatarios, total_de_citacoes, autor_recorrente, tag_recorrente):
     host = "smtp.gmail.com"
     port = "587"
@@ -32,12 +32,14 @@ def enviar_email(caminho_arquivo, destinatarios, total_de_citacoes, autor_recorr
     server.starttls()
     server.login(login, senha)
 
+    #Montando o e-mail
     email_msg = MIMEMultipart()
     email_msg['From'] = login
     email_msg['To'] = ", ".join(destinatarios)
     email_msg['subject'] = "Desafio - RPA Python"
     email_msg.attach(MIMEText(corpo_email, 'plain'))
 
+    #Adiciona o anexo ao e-mail
     with open(caminho_arquivo, 'rb') as arquivo_anexo:
         anexo_email = MIMEBase('application', 'octet-stream')
         anexo_email.set_payload(arquivo_anexo.read())
@@ -47,5 +49,6 @@ def enviar_email(caminho_arquivo, destinatarios, total_de_citacoes, autor_recorr
 
         email_msg.attach(anexo_email)
 
+#envia o email
     server.sendmail(email_msg['From'], destinatarios, email_msg.as_string())
     server.quit()

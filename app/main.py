@@ -29,7 +29,8 @@ def iniciar_scraping():
 
     email_destinatarios = os.getenv("EMAIL_RECIPIENTS").split(",")
     caminho_arquivo = './data/quotes.csv'
-    enviar_email(caminho_arquivo, email_destinatarios,total_citacoes, autor_recorrente, tag_recorrente)
+    enviar_email(caminho_arquivo, email_destinatarios,
+                 total_citacoes, autor_recorrente, tag_recorrente)
 
     driver.quit()
 
