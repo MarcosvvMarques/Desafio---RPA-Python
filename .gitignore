@@ -1,0 +1,4 @@
+# Ignorando o arquivo .env com informações sensíveis e outros arquivos
+.env
+__pycache__/
+data/*

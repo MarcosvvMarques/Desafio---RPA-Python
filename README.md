@@ -1,66 +1,97 @@
-# Desafio---RPA-Python
+# Desafio---RPA-Python 
 
 Este projeto consiste em realizar web scraping em um site para coletar citações, seus autores e as tags associadas a cada um. O script utiliza as bibliotecas Pandas, Selenium e CSV para navegar, coletar dados e analisá-los. Por fim, foi automatizado o envio dos dados extraídos por e-mail atráves da biblioetca smtplib. 
+
+## Pré-requisitos: 
+
+🔹 Antes de rodar o projeto, instale as dependências necessárias: 
+🔹 pip install -r requirements.txt 
+
+- O arquivo requirementes.txt deve conter as seguintes bibliotecas: Selenium, pandas e python-dotenv
+
+## Configuração do E-mail:
+🔹As credenciais de e-mail e os destinatários do e-mail são armazenados em um arquivo .env, que  tem o seguinte formato:
+
+EMAIL_USER=seu_email@gmail.com
+EMAIL_PASSWORD=sua_senha_de_email
+EMAIL_RECIPIENTS=email1@example.com,email2@example.com
 
 
 ## Instruções de execução:
 
-1 - Verifique se você tenha o Python instalado em sua máquina. Caso não tenha faça o download por aqui: https://www.python.org/downloads/
+1 - Crie o arquivo .env com as suas credenciais de e-mail e instale as dependências com pip install -r requirements.txt
 
-2 - Baixe e instale o Visual Studio Code e logo após isso, faça a instalação das biblioetcas selenium utilizando "pip install selenium e Pandas utilizando "pip install pandas". 
+2 - Execute o arquivo main.py para iniciar o processo de scraping e envio do e-mail: python ./app/main.py 
 
-3 - Você pode clonar o projeto "https://github.com/MarcosvvMarques/Desafio---RPA-Python.git" e rodá-lo localmente 
+- Após a execução será possível: 
 
-4 - Navegue até o diretório do projeto: cd Desafio---RPA-Python
-
-5 - instale as dependências do projeto: pip install -r requirements.txt
-
-6 - Execute o script principal: python projetoRPA.py
-
-7 - Para enviar o E-mail crie um arquivo .env com as chaves "EMAIL_USER" e
-"EMAIL_PASSWORD" para que as credenciais fiquem desassociadas ao código
-
-
-## Dependências
-
-O projeto utiliza as seguintes dependências:
-
-🔹Selenium: Para automação e web scraping;
-🔹Pandas: Para manipulação e análise de dados;
-🔹CSV: Para leitura e escrita de arquivos CSV.
-🔹smtplib: Para enviar por e-mail o arquivo "Quotes.csv",
-
-⚠️ Certifique-se de que todas as dependências estão listadas no arquivo requirements.txt.
-
-## Considerações
-
-- Versão do Navegador: Garanta que a versão do navegador, o Google Chrome e o ChromeDriver estão atualizados e são compatíveis.
-
-- Tempo de Carregamento: O script utiliza implicitly_wait para lidar com tempos de carregamento do site. Certifique-se de que sua conexão é estável.
-
-- Permissões de Rede: O script precisa de acesso à internet para acessar o site a ser raspado.
+🔹Realizar o scraping das citações;
+🔹Salvar as citações em quotes.csv;
+🔹Calcular o número de citações, autor mais recorrente e tag mais recorrente;
+🔹Enviar um e-mail com o resumo do relatório e o arquivo quotes.csv anexado.
 
 
 ## Funcionalidades:
 
-🔹 Navegar em todas as páginas de quotes do site;
-🔹Coletar e extrair informações sobre as citações, autores e tags;
-🔹Salvar os dados coletados em um arquivo CSV;
-🔹Ler o arquivo CSV para realizar análises como: Contagem de citações, autor mais recorrente e tag mais frequente. 
-🔹 Enviar por e-mail o arquivo quotes.CSV como anexo.
+**Web Scraping**: Coleta citações de um site específico (https://quotes.toscrape.com/js-delayed/), processa as informações (texto, autor e tags), e as armazena em um arquivo CSV.
 
-## Tecnologias Utilizadas:
+**Envio de E-mail**: Envia um e-mail com o relatório gerado, incluindo um resumo das citações, e anexa o arquivo CSV com as citações extraídas.
 
-🔹 Linguagem de programação: Python
-🔹 Navegador: Google Chrome
-🔹 Bibliotecas: Pandas, Selenium, CSV e smtplib. 
+**Análise de Dados**: Calcula o número total de citações, identifica o autor mais recorrente e a tag mais recorrente.
 
-## Estrutura do Projeto
+## Explicação do Código
 
-🔹 projetoRPA.py: Principal script contendo toda a lógica do web scraping e análise.
+**scraping_service.py**
+- Esse módulo contém as funções relacionadas ao processo de web scraping:
 
-🔹quotes.csv: Arquivo gerado com os dados coletados.
+🔹processar_lista_de_citacoes: Coleta todas as citações de uma página;
+🔹processar_citacao: Extrai os dados de uma citação (texto, autor, tags);
+🔹obter_tags: Obtém as tags associadas a uma citação;
+🔹processar_paginas: Navega entre as páginas de citações e coleta todas as citações.
 
-🔹requirements.txt: Lista de dependências necessárias para o projeto
+**file_service.py**
+- Esse módulo lida com as operações de leitura e escrita no arquivo CSV:
+
+🔹criar_arquivo_citacoes: Cria um arquivo CSV com as citações extraídas;
+🔹ler_citacoes_do_arquivo: Lê o arquivo CSV e retorna uma lista com as citações.
+
+**email_service.py**
+🔹Esse módulo é responsável pelo envio de e-mails com o arquivo de citações como anexo (CSV)
+
+**data_service.py**
+🔹Esse módulo Contém funções auxiliares, como contagem de citações, identificação do autor mais recorrente e a tag mais recorrente:
+
+contar_citacoes: Conta o número total de citações.
+obter_autor_mais_recorrente: Identifica o autor mais recorrente.
+obter_tag_mais_recorrente: Identifica a tag mais recorrente.
+
+
+## Estrutura do Projeto 
+
+🔹 Projeto RPA - Pasta principal do projeto onde estão separados por arquivos todas as funções, arquivo .env, .env.example e requirements.txt;
+
+🔹.env - Arquivo dos dados sensíveis (credenciais de e-mail e senhas);
+
+🔹main.py - Arquivo principal para realizar a execução do script;
+
+🔹scraping_service.py - Módulo para web scraping e extração de dados;
+
+🔹file_service.py - Módulo para manipulação de arquivos (CSV);
+
+🔹email_service.py - Módulo para enviar os e-mails;
+
+🔹data_service.py - Funções auxiliares para o projeto;
+
+🔹quotes.csv - Arquivo gerado com as citações extraídas;
+
+🔹README.md - este arquivo de documentação.
+
+
+
+
+
+
+
+
 
 
